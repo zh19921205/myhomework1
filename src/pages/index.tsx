@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
+import * as dataSource from './index-data';
 
-const IndexPage: React.FC = () => {
+const IndexPage = () => {
+  type speedConversionValue = Record<string, {
+    [key: string]: number,
+  }>;
+
   const [state, setState] = useState({
     weather: 4,
     engineType: 'T3',
@@ -8,14 +13,20 @@ const IndexPage: React.FC = () => {
     outsidetTemperature: 15,
     internalTemperature: 26,
   });
+  // select 数据源
+  const { weatherDataSource, engineTypeDataSource } = dataSource;
 
+  // 绑定输入
   const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: string) => {
     setState((prevState) => {
       return { ...prevState, [field]: e.target.value }
     })
   };
+
+  // 默认值
   const { weather, engineType, engineSpeed, outsidetTemperature, internalTemperature } = state;
 
+  // 转换值
   const handleOutput = () => {
     let speed: string = '';
     switch (true) {
@@ -31,9 +42,7 @@ const IndexPage: React.FC = () => {
       default:
         break;
     };
-    type speedConversionValue = Record<string, {
-      [key: string]: number,
-    }>;
+
 
     const speedConversionValueObj: speedConversionValue = {
       T3: {
@@ -69,10 +78,9 @@ const IndexPage: React.FC = () => {
           name="weather"
           onChange={(e) => handleInput(e, 'weather')}
         >
-          <option value={4}>优</option>
-          <option value={3}>良</option>
-          <option value={2}>中</option>
-          <option value={1}>差</option>
+          {weatherDataSource.map((item:dataSource.SelectType.WeatherDataSourceTypeItem, index:number)=> {
+            return (<option value={item.value}>{item.label}</option>)
+          })}
         </select>
         <br />
         <label htmlFor="engineType">发动机型号：</label>
@@ -81,9 +89,9 @@ const IndexPage: React.FC = () => {
           name="engineType"
           onChange={(e) => handleInput(e, 'engineType')}
         >
-          <option value="T3">T3</option>
-          <option value="T5">T5</option>
-          <option value="E6">E6</option>
+          {engineTypeDataSource.map((item:dataSource.SelectType.WeatherDataSourceTypeItem, index:number)=> {
+            return (<option value={item.value}>{item.label}</option>)
+          })}
         </select>
         <br />
         <label htmlFor="engineSpeed">发动机转速：</label>
